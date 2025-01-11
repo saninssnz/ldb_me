@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ldb_me/utils/navigation_service.dart';
+import 'package:ldb_me/view/screens/dashboard_screen.dart';
 import 'package:ldb_me/view/screens/registration_screen.dart';
 import 'package:ldb_me/view/widgets/textfield_widget.dart';
 
@@ -60,7 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-
+                  navigateToScreen(
+                      context, DashboardScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightBlue[100],
