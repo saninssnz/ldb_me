@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ldb_me/utils/navigation_service.dart';
 import 'package:ldb_me/view/screens/agenda_screen.dart';
+import 'package:ldb_me/view/screens/ask_question_screen.dart';
+import 'package:ldb_me/view/screens/badge_screen.dart';
 import 'package:ldb_me/view/screens/drawer_screen.dart';
+import 'package:ldb_me/view/screens/speakers_screen.dart';
 import 'package:ldb_me/view/widgets/dashboard_tiles.dart';
 
 class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+
   List<DashboardItem> _getItems(BuildContext context) {
     return [
       DashboardItem(
@@ -17,13 +22,13 @@ class DashboardScreen extends StatelessWidget {
         title: 'Speakers',
         icon: "assets/icons/speakers.png",
         color: Color(0xFF1C5D99),
-        onTap: () {},
+        onTap: () => navigateToScreen(context, SpeakersScreen()),
       ),
       DashboardItem(
         title: 'Badge',
         icon: "assets/icons/badge.png",
         color: Color(0xFF1C5D99),
-        onTap: () {},
+        onTap: () => navigateToScreen(context, BadgeScreen()),
       ),
       DashboardItem(
         title: 'Venue',
@@ -47,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
         title: 'Ask\nQuestions',
         icon: "assets/icons/questions.png",
         color: Color(0xFF1C5D99),
-        onTap: () {},
+        onTap: () => navigateToScreen(context, AskQuestionScreen()),
       ),
       DashboardItem(
         title: 'Voting',

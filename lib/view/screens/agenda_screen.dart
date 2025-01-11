@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ldb_me/view/screens/drawer_screen.dart';
+import 'package:ldb_me/view/widgets/custom_scaffold.dart';
+import 'package:ldb_me/view/widgets/header_widget.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -27,110 +30,80 @@ class _AgendaScreenState extends State<AgendaScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.blue),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('Back', style: TextStyle(color: Colors.blue)),
-        titleSpacing: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.menu, color: Colors.grey),
-            onPressed: () {},
-          ),
-        ],
-      ),
+    return CustomScaffold(
       body: Column(
         children: [
-          // Logo and Title
+          headerWidget(context,"AGENDA"),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/icons/riyadh-loreal.png',
-                  height: 80,
-                ),
-                SizedBox(height: 20,),
-                Text(
-                  'AGENDA',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[900],
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
+            child: Container(
+              height: 0.5,
+              width: MediaQuery.sizeOf(context).width,
+              color: Colors.grey,
             ),
           ),
-          // Tab Bar
-          Container(
-            // margin: EdgeInsets.symmetric(horizontal: 16),
-            child: TabBar(
-              controller: _tabController,
-              splashFactory: NoSplash.splashFactory,
-              overlayColor: WidgetStateProperty.all(Colors.transparent),
-              indicatorSize: TabBarIndicatorSize.label,
-              indicatorPadding: EdgeInsets.zero,
-              dividerColor: Colors.transparent,
-              tabs: [
-                Tab(
-                  child: Container(
-                    width: MediaQuery.sizeOf(context).width,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _tabController.index == 0? Colors.blue[900]:Colors.transparent,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'DAY 1 - SATURDAY',
-                          style: TextStyle(fontSize: 10,
-                              color: _tabController.index == 0?Colors.white:Colors.blue[900]),
-                        ),
-                        Text(
-                          'April 20, 2024',
-                          style: TextStyle(fontSize: 10,
-                              color: _tabController.index == 0?Colors.white:Colors.blue[900]),
-                        ),
-                      ],
-                    ),
+          TabBar(
+            controller: _tabController,
+            splashFactory: NoSplash.splashFactory,
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorPadding: EdgeInsets.zero,
+            dividerColor: Colors.transparent,
+            tabs: [
+              Tab(
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width,
+                  height: 40,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: _tabController.index == 0? Color(0xFF0868A3):Colors.transparent,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'DAY 1 - SATURDAY',
+                        style: TextStyle(fontSize: 10,
+                            color: _tabController.index == 0?Colors.white:Color(0xFF0868A3)),
+                      ),
+                      Text(
+                        'April 20, 2024',
+                        style: TextStyle(fontSize: 10,
+                            color: _tabController.index == 0?Colors.white:Color(0xFF0868A3)),
+                      ),
+                    ],
                   ),
                 ),
-                Tab(
-                  child: Container(
-                    width: MediaQuery.sizeOf(context).width,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _tabController.index == 1? Colors.blue[900]:Colors.transparent,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'DAY 2 - SUNDAY',
-                          style: TextStyle(fontSize: 10,
-                              color: _tabController.index == 1?Colors.white:Colors.blue[900]),
-                        ),
-                        Text(
-                          'April 21, 2024',
-                          style: TextStyle(fontSize: 10,
-                              color: _tabController.index == 1?Colors.white:Colors.blue[900]),
-                        ),
-                      ],
-                    ),
+              ),
+              Tab(
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width,
+                  height: 40,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: _tabController.index == 1? Color(0xFF0868A3):Colors.transparent,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'DAY 2 - SUNDAY',
+                        style: TextStyle(fontSize: 10,
+                            color: _tabController.index == 1?Colors.white:Color(0xFF0868A3)),
+                      ),
+                      Text(
+                        'April 21, 2024',
+                        style: TextStyle(fontSize: 10,
+                            color: _tabController.index == 1?Colors.white:Color(0xFF0868A3)),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-              indicator: BoxDecoration(),
-            ),
+              ),
+            ],
+            indicator: BoxDecoration(),
           ),
+          SizedBox(height: 8,),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -150,7 +123,7 @@ class _AgendaScreenState extends State<AgendaScreen> with SingleTickerProviderSt
       children: [
         // Header
         Container(
-          color: Colors.grey[400],
+          color: Colors.grey[500],
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
             child: Row(
@@ -166,7 +139,7 @@ class _AgendaScreenState extends State<AgendaScreen> with SingleTickerProviderSt
                 ),
                 Expanded(
                   child: Text(
-                    "Title",
+                    "Details",
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -182,49 +155,58 @@ class _AgendaScreenState extends State<AgendaScreen> with SingleTickerProviderSt
             itemCount: sessions.length,
             itemBuilder: (context, index) {
               final session = sessions[index];
-              return Container(
-                color: Colors.blue[50],  // Alternating colors
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          session.time,
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              session.title,
+              return Column(
+                children: [
+                  Container(
+                    color: Colors.blue[50],  // Alternating colors
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              session.time,
                               style: TextStyle(
                                 color: Colors.black,
                               ),
                             ),
-                            if (session.speakers.isNotEmpty)
-                              Padding(
-                                padding: EdgeInsets.only(top: 4),
-                                child: Text(
-                                  session.speakers,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  session.title,
                                   style: TextStyle(
-                                    color: Colors.black,fontWeight: FontWeight.w500,
-                                    fontSize: 12,
+                                    color: Colors.black,
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
+                                if (session.speakers.isNotEmpty)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      session.speakers,
+                                      style: TextStyle(
+                                        color: Colors.black,fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    height: 0.5,
+                    width: MediaQuery.sizeOf(context).width,
+                    color: Colors.blue,
+                  )
+                ],
               );
             },
           ),

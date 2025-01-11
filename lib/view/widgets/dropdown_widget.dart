@@ -32,6 +32,7 @@ Widget buildDropdownField({
     onChanged: onChanged,
     isExpanded: true,
     icon: Icon(Icons.arrow_drop_down),
+    dropdownColor: Colors.white, // Set the dropdown menu's background color
     style: TextStyle(
       color: Colors.black87,
       fontSize: 16,
