@@ -56,11 +56,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              buildTextField(hint: 'Full Name',controller: fullNameController),
+              CustomInputField(labelText: 'Full Name *',controller: fullNameController),
               const SizedBox(height: 16),
-              buildTextField(hint: 'Email',controller: emailController),
+              CustomInputField(labelText: 'Email *',controller: emailController),
               const SizedBox(height: 16),
-              buildPasswordField(
+              CustomInputField(
+                isPasswordField: true,
+                labelText: "Password *",
                 controller: passwordController,
                 obscurePassword: _obscurePassword,
                 onVisibilityChanged: (bool newValue) {
@@ -88,11 +90,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              buildTextField(hint: 'Mobile Number',controller: mobileNoController),
+              CustomInputField(labelText: 'Mobile Number *',controller: mobileNoController),
               const SizedBox(height: 16),
-              buildTextField(hint: 'Instagram @',controller: instagramController),
+              CustomInputField(labelText: 'Instagram @',controller: instagramController),
               const SizedBox(height: 16),
-              buildTextField(hint: 'TikTok @',controller: tiktokController),
+              CustomInputField(labelText: 'TikTok @',controller: tiktokController),
               const SizedBox(height: 24),
               _buildConsentCheckbox(
                 isChecked: _consentChecked,
@@ -120,31 +122,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }) {
     return GestureDetector(
       onTap: () {
-        onChanged(!isChecked);
+        onChanged(!isChecked); // Toggle the checked state
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(right: 8,top: 10),
-            height: 24,  // Customize size
+            margin: EdgeInsets.only(right: 8, top: 10),
+            height: 24,
             width: 24,
             decoration: BoxDecoration(
+              color: isChecked ? Colors.blue:Colors.white,
               shape: BoxShape.circle,
               border: Border.all(
                 color: isChecked ? Colors.blue : Colors.grey[400]!,
-                width: 1.0,  // Thin border
+                width: 1.0, // Thin border
               ),
             ),
             child: Center(
-              child: Container(
-                height: 14,  // Size of inner circle when checked
-                width: 14,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isChecked ? Colors.blue : Colors.transparent,
-                ),
-              ),
+              child: isChecked
+                  ? Icon(
+                Icons.check,
+                size: 16,
+                color: Colors.white,
+              )
+                  : SizedBox.shrink(),
             ),
           ),
           Expanded(
@@ -160,6 +162,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
     );
   }
+
 
   Widget _buildRegisterButton() {
     return ElevatedButton(

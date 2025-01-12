@@ -47,9 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              buildTextField(hint: 'Email',controller: emailController),
+              CustomInputField(labelText: 'Email',controller: emailController),
               const SizedBox(height: 16),
-              buildPasswordField(
+              CustomInputField(
+                isPasswordField: true,
+                labelText: "Password",
                 controller: passwordController,
                 obscurePassword: _obscurePassword,
                 onVisibilityChanged: (bool newValue) {

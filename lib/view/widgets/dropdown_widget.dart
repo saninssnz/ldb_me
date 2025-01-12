@@ -10,7 +10,9 @@ Widget buildDropdownField({
     value: value,
     decoration: InputDecoration(
       labelText: hint,
-      labelStyle: TextStyle(color: Colors.black),
+      labelStyle: TextStyle(
+        color: value == null ? Colors.grey[400] : Colors.black, // Dynamic label color
+      ),
       filled: true,
       fillColor: Colors.white,
       enabledBorder: OutlineInputBorder(
