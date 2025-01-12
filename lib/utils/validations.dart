@@ -1,8 +1,11 @@
-bool isValidEmail(String value) {
-  String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-  RegExp regex = RegExp(pattern);
-  bool isValid = !regex.hasMatch(value);
-  return isValid;
+String? emailValidator(String? value) {
+  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  if (value == null || value.isEmpty) {
+    return null;
+  } else if (!emailRegex.hasMatch(value)) {
+    return 'Enter a valid email address';
+  }
+  return null;
 }
 
 bool isValidMobile(String value) {

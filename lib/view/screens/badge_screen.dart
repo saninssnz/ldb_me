@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ldb_me/controller/api_controller.dart';
 import 'package:ldb_me/view/widgets/custom_scaffold.dart';
 import 'package:ldb_me/view/widgets/header_widget.dart';
 
@@ -10,6 +13,8 @@ class BadgeScreen extends StatefulWidget {
 }
 
 class _BadgeScreenState extends State<BadgeScreen> {
+  final ApiController apiController = Get.put(ApiController());
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -28,13 +33,25 @@ class _BadgeScreenState extends State<BadgeScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Image.asset("assets/images/qr.png"),
+                    CachedNetworkImage(
+                      imageUrl: apiController.loginModel.value.qrCode.toString(),
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFA0C5FF),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.error,
+                        color: Colors.red,
+                      ),
+                      fadeInDuration: Duration(milliseconds: 300),
+                    ),
                     Text("SCAN THIS QR CODE FOR ATTENDANCE",
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 12,fontWeight: FontWeight.w500
                     ),),
-                    Text("\"Abdul Muheeth\"",style: TextStyle(
+                    Text("\"${apiController.loginModel.value.doctorName}\"",style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
                       color: Colors.blue[800]

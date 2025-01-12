@@ -1,11 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:ldb_me/model/speaker_model.dart';
 import 'package:ldb_me/view/screens/speakers_screen.dart';
 import 'package:ldb_me/view/widgets/custom_scaffold.dart';
 import 'package:ldb_me/view/widgets/header_widget.dart';
 
 class SpeakerDetailsScreen extends StatefulWidget {
-  Speaker speakerData = Speaker();
-  SpeakerDetailsScreen({super.key,required this.speakerData});
+  Result speakerData = Result();
+  SpeakerDetailsScreen({super.key, required this.speakerData});
 
   @override
   State<SpeakerDetailsScreen> createState() => _SpeakerDetailsScreenState();
@@ -17,9 +20,9 @@ class _SpeakerDetailsScreenState extends State<SpeakerDetailsScreen> {
     return CustomScaffold(
       body: Column(
         children: [
-          headerWidget(context,""),
+          headerWidget(context, ""),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16.0,0,16,0),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16, 0),
             child: SizedBox(
               width: MediaQuery.sizeOf(context).width,
               child: Material(
@@ -32,41 +35,44 @@ class _SpeakerDetailsScreenState extends State<SpeakerDetailsScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Stack(
-                        alignment: Alignment.bottomLeft,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.asset(
-                              widget.speakerData.image.toString(),
-                              width: 200,
-                              height: 200,
-                              fit: BoxFit.cover,
+                      CachedNetworkImage(
+                        imageUrl: widget.speakerData.speakerImage.toString(),
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          width: 200,
+                          height: 200,
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             ),
                           ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.asset(
-                              widget.speakerData.country.toString(),
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 15,),
-                      Text(
-                        widget.speakerData.role.toString(),
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.3,
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          width: 200,
+                          height: 200,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.person,
+                              size: 50, color: Colors.grey),
                         ),
                       ),
-                      SizedBox(height: 4,),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Html(
+                          data:
+                              widget.speakerData.speakerDesignation.toString()),
+                      SizedBox(
+                        height: 4,
+                      ),
                       Text(
-                        widget.speakerData.name.toString(),
+                        widget.speakerData.speakerName.toString(),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -81,7 +87,6 @@ class _SpeakerDetailsScreenState extends State<SpeakerDetailsScreen> {
           )
         ],
       ),
-
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ldb_me/controller/api_controller.dart';
 import 'package:ldb_me/view/widgets/custom_scaffold.dart';
 import 'package:ldb_me/view/widgets/header_widget.dart';
 
@@ -8,16 +10,21 @@ class AskQuestionScreen extends StatefulWidget {
 }
 
 class _AskQuestionScreenState extends State<AskQuestionScreen> {
+  final ApiController apiController = Get.put(ApiController());
+
   String? selectedSession;
-  final List<String> sessions = [
-    'Opening & Fight with Care',
-    'Road of Innovations',
-    'LDB medical introduction',
-    'New MELA B3',
-  ];
+  bool _isButtonEnabled = false;
 
   final _nameController = TextEditingController();
   final _questionController = TextEditingController();
+
+  @override
+  void initState() {
+    apiController.loadSpeakers();
+    _nameController.addListener(_updateButtonState);
+    _questionController.addListener(_updateButtonState);
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -29,37 +36,108 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            headerWidget(context,"AGENDA"),
-            Padding(
-              padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
-              child: Container(
-                height: 0.5,
-                width: MediaQuery.sizeOf(context).width,
-                color: Colors.grey,
-              ),
+      body: Obx(() {
+          return apiController.isSpeakersLoading.value
+              ? Center(
+            child: const SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: Color(0xFFA0C5FF),
+                )),
+          )
+              : SingleChildScrollView(
+            child: Column(
+              children: [
+                headerWidget(context, "AGENDA"),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0, left: 8, right: 8),
+                  child: Container(
+                    height: 0.5,
+                    width: MediaQuery.sizeOf(context).width,
+                    color: Colors.grey,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel('Select Session'),
+                      _buildCustomDropdown(),
+                      SizedBox(height: 24),
+                      _buildLabel('Your Name'),
+                      _buildTextField(_nameController),
+                      SizedBox(height: 24),
+                      _buildLabel('Ask Question'),
+                      _buildTextField(_questionController, maxLines: 4),
+                      SizedBox(height: 32),
+                      apiController.isQuestionLoading.value
+                          ? Center(
+                              child: const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFFA0C5FF),
+                                  )),
+                            )
+                          : IgnorePointer(
+                              ignoring: !_isButtonEnabled || selectedSession == null,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    FocusScope.of(context).unfocus();
+                                    apiController
+                                        .askQuestion(
+                                            question: _questionController.text,
+                                            speaker: selectedSession,
+                                            userName: _nameController.text)
+                                        .then((value) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    apiController.message.value)));
+                                        if (value) {
+                                          setState(() {
+                                            _questionController.clear();
+                                            selectedSession = null;
+                                            _nameController.clear();
+                                          });
+                                        }
+                                      }
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: selectedSession != null &&
+                                           _isButtonEnabled
+                                        ? Color(0xFFA0C5FF)
+                                        : Colors.lightBlue[100],
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Send',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildLabel('Select Session'),
-                  _buildCustomDropdown(),
-                  SizedBox(height: 24),
-                  _buildLabel('Your Name'),
-                  _buildTextField(_nameController),
-                  SizedBox(height: 24),
-                  _buildLabel('Ask Question'),
-                  _buildTextField(_questionController, maxLines: 4),
-                  SizedBox(height: 32),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }
@@ -95,10 +173,11 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
             color: Colors.white,
             offset: Offset(0, 0),
             constraints: BoxConstraints(
-              minWidth: constraints.maxWidth,  // Make popup width same as field
+              minWidth: constraints.maxWidth, // Make popup width same as field
               maxWidth: constraints.maxWidth,
             ),
-            position: PopupMenuPosition.under,  // Position directly under the field
+            position:
+                PopupMenuPosition.under, // Position directly under the field
             onSelected: (String value) {
               setState(() {
                 selectedSession = value;
@@ -128,7 +207,9 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
                     child: Text(
                       selectedSession ?? '',
                       style: TextStyle(
-                        color: selectedSession != null ? Colors.black87 : Colors.grey[600],
+                        color: selectedSession != null
+                            ? Colors.black87
+                            : Colors.grey[600],
                         fontSize: 14,
                       ),
                     ),
@@ -137,13 +218,13 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
               ),
             ),
             itemBuilder: (BuildContext context) {
-              return sessions.map((String value) {
+              return apiController.speakerModel.value.data?.result?.map((speaker) {
                 return PopupMenuItem<String>(
-                  value: value,
+                  value: speaker.speakerName ?? '',
                   child: SizedBox(
-                    width: double.infinity,  // Make menu item take full width
+                    width: double.infinity,
                     child: Text(
-                      value,
+                      speaker.speakerName ?? '',
                       style: TextStyle(
                         color: Colors.black87,
                         fontSize: 14,
@@ -151,7 +232,7 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
                     ),
                   ),
                 );
-              }).toList();
+              }).toList() ?? [];
             },
           ),
         );
@@ -174,5 +255,11 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
         ),
       ),
     );
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      _isButtonEnabled = _nameController.text.isNotEmpty && _questionController.text.isNotEmpty;
+    });
   }
 }

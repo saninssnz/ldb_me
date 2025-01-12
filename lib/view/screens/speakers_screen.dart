@@ -1,116 +1,132 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
+import 'package:ldb_me/controller/api_controller.dart';
+import 'package:ldb_me/model/speaker_model.dart';
 import 'package:ldb_me/utils/navigation_service.dart';
 import 'package:ldb_me/view/screens/spearker_details_screen.dart';
 import 'package:ldb_me/view/widgets/custom_scaffold.dart';
 import 'package:ldb_me/view/widgets/header_widget.dart';
 
-class SpeakersScreen extends StatelessWidget {
-  final List<Speaker> speakers = [
-    Speaker(
-      name: 'Prof. Reinhard Dummer, MD',
-      role: 'Vice-Chairman, Department of Dermatology University Hospital of Zurich, Switzerland',
-      image: 'assets/images/person1.png',
-      country: 'assets/images/AE.png',
-    ),
-    Speaker(
-      name: 'Christopher HSU, MD',
-      role: 'Global Dermatologist (Switzerland)\nGlobal Dermatology, JEADV & JAAD Editorial Boards\nInternational Society of TeleDermatology (Secretary General& Member of the Board)\nSwitzerland',
-      image: 'assets/images/person1.png',
-      country: 'assets/images/BH.png',
-    ),
-    Speaker(
-      name: 'Dr Abdullah Al Essa, MD',
-      role: 'CEO and Consultant Dermatologist\nat Derma Clinic Saudi Arabia',
-      image: 'assets/images/person1.png',
-      country: 'assets/images/AE.png',
-    ),
-    Speaker(
-      name: 'Dr Tarun Chopra, Ph.D.',
-      role: "L'Oreal Research and Innovation,\nScalp Research Consultant and\nFormulation Scientist",
-      image: 'assets/images/person1.png',
-      country: 'assets/images/BH.png',
-    ),
-  ];
 
-  SpeakersScreen({super.key});
+class SpeakersScreen extends StatefulWidget {
+  const SpeakersScreen({super.key});
+
+  @override
+  State<SpeakersScreen> createState() => _SpeakersScreenState();
+}
+
+class _SpeakersScreenState extends State<SpeakersScreen> {
+  final ApiController apiController = Get.put(ApiController());
+
+  @override
+  void initState() {
+    apiController.loadSpeakers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      body: Column(
-        children: [
-          // Logo and Title
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Column(
-              children: [
-                headerWidget(context,"SPEAKERS"),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
-                  child: Container(
-                    height: 0.5,
-                    width: MediaQuery.sizeOf(context).width,
-                    color: Colors.grey,
+      body: Obx(() {
+        return apiController.isSpeakersLoading.value
+            ? Center(
+                child: const SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFA0C5FF),
+                    )),
+              )
+            : Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        headerWidget(context, "SPEAKERS"),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 5.0, left: 8, right: 8),
+                          child: Container(
+                            height: 0.5,
+                            width: MediaQuery.sizeOf(context).width,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          // Speakers List
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: speakers.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: (){
-                    navigateToScreen(context, SpeakerDetailsScreen(speakerData: speakers[index]));
-                  },
-                    child: _buildSpeakerCard(speakers[index]));
-              },
-            ),
-          ),
-        ],
-      ),
+                  // Speakers List
+                  Expanded(
+                    child: apiController.speakerModel.value.data != null &&
+                            apiController.speakerModel.value.data?.result !=
+                                null
+                        ? ListView.builder(
+                            padding: EdgeInsets.all(16),
+                            itemCount: apiController
+                                .speakerModel.value.data?.result?.length,
+                            itemBuilder: (context, index) {
+                              final speaker = apiController
+                                  .speakerModel.value.data!.result?[index];
+                              return InkWell(
+                                  onTap: () {
+                                    navigateToScreen(
+                                        context,
+                                        SpeakerDetailsScreen(
+                                            speakerData: speaker ?? Result()));
+                                  },
+                                  child:
+                                      _buildSpeakerCard(speaker ?? Result()));
+                            },
+                          ):Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("No data available"),
+                        )),
+                  ),
+                ],
+              );
+      }),
     );
   }
 
-  Widget _buildSpeakerCard(Speaker speaker) {
+  Widget _buildSpeakerCard(Result speaker) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Stack(
-            alignment: Alignment.bottomLeft,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.asset(
-                  speaker.image.toString(),
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.asset(
-                  speaker.country.toString(),
+          CachedNetworkImage(
+            imageUrl: speaker.speakerImage.toString(),
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: Colors.grey[200],
+              child: const Center(
+                child: SizedBox(
                   width: 20,
                   height: 20,
-                  fit: BoxFit.cover,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
                 ),
               ),
-            ],
+            ),
+            errorWidget: (context, url, error) => Container(
+              color: Colors.grey[200],
+              child: const Icon(Icons.person, color: Colors.grey),
+            ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  speaker.name.toString(),
+                  speaker.speakerName.toString(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -118,34 +134,35 @@ class SpeakersScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 4),
-                Text(
-                  speaker.role.toString(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    height: 1.3,
-                  ),
-                ),
+                Html(data: speaker.speakerDesignation.toString(),
+                  style: {
+                    "body": Style(
+                      fontSize: FontSize(12),
+                      color: Colors.grey[600],
+                      margin: Margins.zero,
+                      padding: HtmlPaddings.zero,
+                    ),
+                    "p": Style(
+                      margin: Margins.only(bottom: 4),
+                    ),
+                    "i": Style(
+                      fontStyle: FontStyle.italic,
+                    ),
+                    "a": Style(
+                      color: Colors.blue,
+                      textDecoration: TextDecoration.underline,
+                    ),
+                  },)
               ],
             ),
           ),
-          Icon(Icons.arrow_forward_ios_rounded,color: Colors.grey,size: 15,)
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: Colors.grey,
+            size: 15,
+          )
         ],
       ),
     );
   }
-}
-
-class Speaker {
-  final String? name;
-  final String? role;
-  final String? image;
-  final String? country;
-
-  Speaker({
-    this.name,
-    this.role,
-    this.image,
-    this.country,
-  });
 }
